@@ -246,11 +246,16 @@ def isolcpus():
 # Returns list of isolated cpu ids from /proc/cmdline content.
 def parse_isolcpus(cmdline):
     cpus = []
+    isol_cpus = []
+    nocbs_cpus = []
 
     # Ensure that newlines are removed.
     cmdline_stripped = cmdline.rstrip()
 
     cmdline_fields = cmdline_stripped.split()
+
+    isol_str = ""
+    nocbs_str = ""
     for cmdline_field in cmdline_fields:
         pair = cmdline_field.split("=")
         if len(pair) != 2:
@@ -260,8 +265,14 @@ def parse_isolcpus(cmdline):
         value = pair[1]
 
         if key == "isolcpus":
-            cpus_str = value.split(",")
-            cpus += parse_cpus_from_isolcpus(cpus_str)
+            isol_str = value.split(",")
+            isol_cpus += parse_cpus_from_isolcpus(isol_str)
+        if key == "rcu_nocbs":
+            nocbs_str = value.split(",")
+            nocbs_cpus += parse_cpus_from_isolcpus(nocbs_str)
+
+    if isol_cpus and nocbs_cpus:
+        cpus += [x for x in nocbs_cpus if x not in isol_cpus]
 
     # Get unique cpu_ids from list
     cpus = list(set(cpus))
