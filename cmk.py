@@ -25,6 +25,7 @@ Usage:
                    [--num-shared-cores=<num>] [--pull-secret=<name>]
                    [--saname=<name>] [--shared-mode=<mode>]
                    [--exclusive-mode=<mode>] [--namespace=<name>]
+                   [--skip-webhook]
   cmk init [--conf-dir=<dir>] [--num-exclusive-cores=<num>]
            [--num-shared-cores=<num>] [--socket-id=<num>]
            [--shared-mode=<mode>] [--exclusive-mode=<mode>]
@@ -79,6 +80,7 @@ Options:
   --namespace=<name>           Set the namespace to deploy pods to during the
                                cluster-init deployment process.
                                [default: default].
+  --skip-webhook               skip the deployment of webhook.
 """  # noqa: E501
 from intel import (
     clusterinit, describe, discover, init, install,
@@ -102,7 +104,8 @@ def main():
                                  args["--num-shared-cores"],
                                  args["--pull-secret"],
                                  args["--saname"], args["--exclusive-mode"],
-                                 args["--shared-mode"], args["--namespace"])
+                                 args["--shared-mode"], args["--namespace"],
+                                 args["--skip-webhook"])
         return
     if args["init"]:
         init.init(args["--conf-dir"],

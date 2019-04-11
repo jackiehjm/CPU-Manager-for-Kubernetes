@@ -26,7 +26,7 @@ from intel import k8s, util
 def cluster_init(host_list, all_hosts, cmd_list, cmk_img, cmk_img_pol,
                  conf_dir, install_dir, num_exclusive_cores, num_shared_cores,
                  pull_secret, serviceaccount, exclusive_mode, shared_mode,
-                 namespace):
+                 namespace, skipwebhook):
     logging.info("Used ServiceAccount: {}".format(serviceaccount))
     cmk_node_list = get_cmk_node_list(host_list, all_hosts)
     logging.debug("CMK node list: {}".format(cmk_node_list))
@@ -79,7 +79,7 @@ def cluster_init(host_list, all_hosts, cmd_list, cmk_img, cmk_img_pol,
 
     # Run mutating webhook admission controller on supported cluster
     version = util.parse_version(k8s.get_kubelet_version(None))
-    if version >= util.parse_version("v1.9.0"):
+    if not skipwebhook and version >= util.parse_version("v1.9.0"):
         deploy_webhook(namespace, conf_dir, install_dir, serviceaccount,
                        cmk_img)
 
